@@ -1,5 +1,4 @@
 import fastapi
-import yaml
 from fastapi.middleware.cors import CORSMiddleware
 
 app = fastapi.FastAPI()
@@ -11,8 +10,11 @@ app.add_middleware(
     allow_credentials=True,
 )
 
-@app.get("/config")
-async def get_config():
-    with open("./assets/config.yaml", "r") as f:
-        return yaml.load(f.read(), Loader=yaml.FullLoader)
-    
+
+@app.get("/")
+async def get_root():
+    return "Hello"
+
+
+@app.post("/clients/signup")
+async def client_signup() -> None: ...
