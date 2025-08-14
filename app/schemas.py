@@ -22,9 +22,9 @@ class Client(Base):
     client_id: Mapped[str] = mapped_column(String, primary_key=True)
 
     full_name: Mapped[str] = mapped_column(String)
+    email: Mapped[str] = mapped_column(String)
     date_of_birth: Mapped[date] = mapped_column(Date)
     gender: Mapped[str] = mapped_column(String)
-    email: Mapped[str] = mapped_column(String)
     country: Mapped[str] = mapped_column(String)
 
     # Additional optional data
@@ -38,6 +38,7 @@ class Client(Base):
     login_count: Mapped[int] = mapped_column(default=0)
 
     # Security
+    password_hash: Mapped[str] = mapped_column(String)
     ip_address: Mapped[str | None] = mapped_column(String)
 
     api_key: Mapped[str] = mapped_column(
@@ -65,7 +66,7 @@ class Client(Base):
 class TestResult(Base):
     __tablename__ = "cogspeed_test_result"
 
-    id: Mapped[str] = mapped_column("_id", String, primary_key=True)
+    id: Mapped[str] = mapped_column("id", String, primary_key=True)
     client_id: Mapped[str] = mapped_column(ForeignKey("clients.client_id"), primary_key=True)
     client: Mapped["Client"] = relationship(back_populates="test_results")
 
@@ -108,7 +109,8 @@ class TestResult(Base):
 
     rounds: Mapped[list["TestRound"]] = relationship(
         back_populates="test_result",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        foreign_keys="[TestRound.client_id, TestRound.test_id]"
     )
 
 
@@ -141,7 +143,8 @@ class TestRound(Base):
 
     # Relationship to TestResult
     test_result: Mapped["TestResult"] = relationship(
-        back_populates="rounds"
+        back_populates="rounds",
+        foreign_keys=[client_id, test_id]
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
