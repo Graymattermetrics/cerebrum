@@ -1,3 +1,6 @@
+"""Implements tests for the /clients/signup endpoint."""
+
+import datetime
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -10,7 +13,9 @@ from app.schemas import Client
 pytestmark = pytest.mark.asyncio
 
 
-async def test_client_signup_success(client: AsyncClient, session: AsyncSession) -> None:
+async def test_client_signup_success(
+    client: AsyncClient, session: AsyncSession
+) -> None:
     """
     Tests successful creation of a new client account.
     """
@@ -53,7 +58,7 @@ async def test_client_signup_duplicate_email(
         client_id="initial_user_1",
         full_name="Initial User",
         email=initial_email,
-        date_of_birth="1990-01-01",
+        date_of_birth=datetime.date(1974, 1, 1),
         gender="Male",
         country="Firstland",
         password_hash=create_hash("initial_password"),

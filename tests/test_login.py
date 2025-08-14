@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.main import create_hash
 from app.schemas import Client
 
+
 @pytest.mark.asyncio
 async def test_login_success(client: AsyncClient, session: AsyncSession) -> None:
     password: str = "a_strong_password"

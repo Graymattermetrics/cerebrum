@@ -1,10 +1,10 @@
-"""This file contains the models used in the endpoints in requests and responses
-from the client-server.
+"""Implements the models used in api requests and responses.
 
+Synced with the database schemas.
 """
 
 from datetime import date
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 __all__ = ["LoginBody", "LoginResponse", "ClientCreate"]
 
@@ -16,7 +16,6 @@ class LoginBody(BaseModel):
 
 class LoginResponse(BaseModel):
     success: bool = Field(..., description="Whether or not the login was successful")
-    
 
 
 class ClientCreate(BaseModel):
@@ -32,8 +31,6 @@ class ClientCreate(BaseModel):
     education_level: str | None = Field(None, examples=["Bachelor's Degree"])
     occupation: str | None = Field(None, examples=["Software Developer"])
     handedness: str | None = Field(None, examples=["Right"])
-    # notes: str | None = Field(None, examples=["Signed up with the Biggs Insitute"])
+    # notes: str | None = Field(None, examples=["Signed up with the Biggs Institute"])
 
-    class Config:
-        orm_mode = True
-
+    model_config = ConfigDict(from_attributes=True)
