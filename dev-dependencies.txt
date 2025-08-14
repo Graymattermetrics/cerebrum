@@ -1,0 +1,6 @@
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+anyio>=3.0.0
+httpx>=0.24.0
+sqlalchemy[asyncio]
+aiosqlite"
