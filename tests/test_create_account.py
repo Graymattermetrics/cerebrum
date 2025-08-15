@@ -21,7 +21,7 @@ async def test_client_signup_success(
     """
     client_data = {
         "full_name": "Test User",
-        "email": "test.user@example.com",
+        "email": "test.user.signup.success@example.com",
         "date_of_birth": "1995-06-15",
         "gender": "Female",
         "country": "Testland",
@@ -77,7 +77,7 @@ async def test_client_signup_duplicate_email(
 
     response = await client.post("/clients/signup", json=duplicate_client_data)
 
-    assert response.status_code == 400
+    assert response.status_code == 409
     response_json = response.json()
     assert "detail" in response_json
     assert response_json["detail"] == "Email already registered"

@@ -35,14 +35,14 @@ class Client(Base):
     last_login: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
     )
-    login_count: Mapped[int] = mapped_column(default=0)
+    login_count: Mapped[int] = mapped_column(default=0, autoincrement=True)
 
     # Security
-    password_hash: Mapped[str] = mapped_column(String)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
     ip_address: Mapped[str | None] = mapped_column(String)
 
     api_key: Mapped[str] = mapped_column(
-        String, unique=True, default=lambda: uuid.uuid4().hex
+        String, unique=True, default=lambda: uuid.uuid4().hex, nullable=False
     )
 
     created_at: Mapped[datetime] = mapped_column(
