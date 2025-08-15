@@ -1,6 +1,0 @@
-aiosqlite
-fastapi[all]
-gunicorn
-pydantic
-sqlalchemy>=2.0.03
-uvicorn[standard]

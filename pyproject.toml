@@ -13,6 +13,14 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
+dependencies = [
+  "aiosqlite",
+  "fastapi[all]",
+  "gunicorn",
+  "pydantic",
+  "sqlalchemy>=2.0.3",
+  "uvicorn[standard]",
+]
 optional-dependencies.dev = [
   "black==22.6",
   "typing-extensions>=4.3,<5",
@@ -23,7 +31,6 @@ optional-dependencies.test = [
   "httpx>=0.24",
   "pytest>=7",
   "pytest-asyncio>=0.21",
-  "python-multipart",
   "sqlalchemy[asyncio]",
 ]
 

@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 # Install pip requirements
 WORKDIR /app
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
+COPY pyproject.toml .
+RUN python -m pip install .[test]
 
 COPY . .
 

@@ -32,7 +32,8 @@ jobs:
           docker compose exec web python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"
 
       - name: Run tests inside the container
-        run: docker compose exec web python -m pytest
+        run: |
+          docker compose exec web python -m pytest
 
       - name: View logs on failure
         if: failure()
