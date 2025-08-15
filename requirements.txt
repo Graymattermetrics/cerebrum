@@ -1,3 +1,4 @@
 fastapi[all]
 gunicorn
+sqlalchemy>=2.0.03
 uvicorn[standard]
