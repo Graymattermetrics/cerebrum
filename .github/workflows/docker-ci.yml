@@ -1,0 +1,43 @@
+name: Docker CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker-compose build
+
+      - name: Start the container
+        run: docker-compose up -d
+
+      - name: Wait for service to be ready
+        run: |
+          echo "Waiting for container to be healthy..."
+          for i in {1..30}; do
+            if docker-compose exec web python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"; then
+              echo "Container is healthy!"
+              break
+            fi
+            sleep 1
+          done
+          # Check one last time and fail if not ready
+          docker-compose exec web python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"
+
+      - name: Run tests inside the container
+        run: docker-compose exec web pytest
+
+      - name: View logs on failure
+        if: failure()
+        run: docker-compose logs
+
+      - name: Stop container
+        if: always()
+        run: docker-compose down
