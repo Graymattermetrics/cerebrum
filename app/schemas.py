@@ -3,19 +3,26 @@
 import uuid
 from datetime import datetime, date
 
-from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from pydantic import ConfigDict
+from sqlmodel import (
+    SQLModel,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-__all__ = ["Base", "Client", "TestResult", "TestRound"]
+__all__ = ["Client", "TestResult", "TestRound"]
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class Client(Base):
-    __tablename__ = "clients"
+class Client(SQLModel, table=True):
+    __tablename__ = "clients"  # type: ignore
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # type: ignore
 
     client_id: Mapped[str] = mapped_column(String, primary_key=True)
 
@@ -57,8 +64,9 @@ class Client(Base):
     )
 
 
-class TestResult(Base):
-    __tablename__ = "cogspeed_test_result"
+class TestResult(SQLModel, table=True):
+    __tablename__ = "cogspeed_test_result"  # type: ignore
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # type: ignore
 
     id: Mapped[str] = mapped_column("id", String, primary_key=True)
     client_id: Mapped[str] = mapped_column(
@@ -134,8 +142,9 @@ class TestResult(Base):
     # )
 
 
-class TestRound(Base):
-    __tablename__ = "cogspeed_test_round"
+class TestRound(SQLModel, table=True):
+    __tablename__ = "cogspeed_test_round"  # type: ignore
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # type: ignore
 
     # Composite primary key: (client_id, test_id, num)
     client_id: Mapped[str] = mapped_column(

@@ -6,10 +6,10 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from pytest import FixtureRequest, Parser
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlmodel import SQLModel
 
 from app.database import get_db
 from app.main import app
-from app.schemas import Base
 
 TEST_SQLALCHEMY_DATABASE_URL: str = "sqlite+aiosqlite:///./test.sql"
 
@@ -40,15 +40,15 @@ def pytest_addoption(parser: Parser):
 @pytest_asyncio.fixture(scope="session")
 async def session(request: FixtureRequest) -> AsyncGenerator[AsyncSession, None]:
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
 
     async with TestingAsyncSessionLocal() as db_session:
         yield db_session
 
     if not request.config.getoption("--keep"):
         async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(SQLModel.metadata.drop_all)
 
 
 @pytest_asyncio.fixture(scope="module")
