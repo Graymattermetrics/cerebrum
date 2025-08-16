@@ -3,11 +3,12 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.main import create_hash
+from app.utils import create_hash
 from app.schemas import Client
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_login_success(client: AsyncClient, session: AsyncSession) -> None:
     password: str = "a_strong_password"
     user_in_db = Client(
@@ -36,7 +37,6 @@ async def test_login_success(client: AsyncClient, session: AsyncSession) -> None
     assert (c := response_data["client"]["client_id"]) and len(c) == 10
 
 
-@pytest.mark.asyncio
 async def test_login_fail(client: AsyncClient, session: AsyncSession) -> None:
     password: str = "a_strong_password"
     user_in_db = Client(

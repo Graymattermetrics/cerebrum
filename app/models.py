@@ -7,17 +7,17 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 __all__ = [
-    "Client_Model_Base_",
-    "Client_Create_Model_",
-    "Client_Model_",
-    "LoginBody_Model_",
-    "LoginResponse_Model_",
-    "CogspeedTestRound_Model_",
-    "CogspeedTestResult_Model_",
+    "ClientBaseModel",
+    "ClientCreateModel",
+    "ClientModel",
+    "LoginBodyModel",
+    "LoginResponseModel",
+    "CogspeedTestRoundModel",
+    "CogspeedTestResultModel",
 ]
 
 
-class Client_Model_Base_(BaseModel):
+class ClientBaseModel(BaseModel):
     email: EmailStr
     full_name: str = Field(..., examples=["Jane Doe"])
     date_of_birth: date
@@ -33,11 +33,11 @@ class Client_Model_Base_(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Client_Create_Model_(Client_Model_Base_):
+class ClientCreateModel(ClientBaseModel):
     password: str
 
 
-class Client_Model_(Client_Model_Base_):
+class ClientModel(ClientBaseModel):
     client_id: str
     # Existing clients also contain api_key field
     api_key: str = Field(
@@ -46,18 +46,18 @@ class Client_Model_(Client_Model_Base_):
     password_hash: str
 
 
-class LoginBody_Model_(BaseModel):
+class LoginBodyModel(BaseModel):
     email: EmailStr
     password: str
 
 
-class LoginResponse_Model_(BaseModel):
+class LoginResponseModel(BaseModel):
     success: bool = Field(..., description="Whether or not the login was successful")
     error: str | None = Field(..., description="Error in request")
-    client: Client_Model_ | None = Field(..., description="The newly created client")
+    client: ClientModel | None = Field(..., description="The newly created client")
 
 
-class CogspeedTestRound_Model_(BaseModel):
+class CogspeedTestRoundModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     num: int = Field(alias="Num")
@@ -73,7 +73,7 @@ class CogspeedTestRound_Model_(BaseModel):
     previous: str = Field(alias="Previous")
 
 
-class CogspeedTestResult_Model_(BaseModel):
+class CogspeedTestResultModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: str
@@ -123,4 +123,4 @@ class CogspeedTestResult_Model_(BaseModel):
     local_date: str = Field(alias="localDate")
     local_time: str = Field(alias="localTime")
 
-    rounds: list[CogspeedTestRound_Model_]
+    rounds: list[CogspeedTestRoundModel]

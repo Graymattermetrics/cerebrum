@@ -1,14 +1,11 @@
 from sqlalchemy import inspect
-from app.models import (
-    CogspeedTestResult_Model_,
-    CogspeedTestRound_Model_,
-)  # Your SQLAlchemy models
-from app.schemas import CogspeedTestResult, CogspeedTestRound  # Your Pydantic models
+from app.models import CogspeedTestResultModel, CogspeedTestRoundModel
+from app.schemas import CogspeedTestResult, CogspeedTestRound
 
 
 def test_testresult_pydantic_and_sqlalchemy_schemas_are_in_sync():
     sqlalchemy_columns = {c.name for c in inspect(CogspeedTestResult).columns}
-    pydantic_fields = set(CogspeedTestResult_Model_.model_fields.keys())
+    pydantic_fields = set(CogspeedTestResultModel.model_fields.keys())
 
     sqlalchemy_only = {"created_at"}
     pydantic_only = {"rounds"}
@@ -26,10 +23,10 @@ def test_testresult_pydantic_and_sqlalchemy_schemas_are_in_sync():
 
 def test_testround_pydantic_and_sqlalchemy_schemas_are_in_sync():
     sqlalchemy_columns = {c.name for c in inspect(CogspeedTestRound).columns}
-    pydantic_fields = set(CogspeedTestRound_Model_.model_fields.keys())
+    pydantic_fields = set(CogspeedTestRoundModel.model_fields.keys())
 
     sqlalchemy_only = {"created_at", "client_id", "test_id"}
-    pydantic_only: set[str] = set()  # No nested models in TestRound_Model_
+    pydantic_only: set[str] = set()
 
     expected_pydantic_fields = (sqlalchemy_columns - sqlalchemy_only).union(
         pydantic_only

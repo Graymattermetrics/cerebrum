@@ -1,5 +1,3 @@
-"""Implements tests for the /clients/signup endpoint."""
-
 import datetime
 from typing import TYPE_CHECKING, Any
 import pytest
@@ -10,17 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas import CogspeedTestResult, CogspeedTestRound
 
 if TYPE_CHECKING:
-    from .conftest import Created_Client_Type_
+    from ..conftest import CreatedClientType
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_post_cogspeed_test_result(
-    client: AsyncClient, session: AsyncSession, created_client: "Created_Client_Type_"
+    client: AsyncClient, session: AsyncSession, created_client: "CreatedClientType"
 ) -> None:
-    """
-    Tests successful creation of a new client account.
-    """
     client_id = created_client["client_id"]
     api_key = created_client["api_key"]
 

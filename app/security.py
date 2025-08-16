@@ -13,9 +13,8 @@ def verify_api_key(api_key: str, hashed_key: str) -> bool:
 
 
 async def get_client_id_from_api_key(
-    x_api_key: str | None = Header(None),
-    x_client_id: str | None = Header(None),
-    # This parameter is provided by another dependency!
+    x_api_key: str = Header(),
+    x_client_id: str = Header(),
     db: AsyncSession = Depends(get_db),
 ) -> str:
     """

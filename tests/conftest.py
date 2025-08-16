@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.database import get_db
 from app.main import app
+from app.utils import create_hash
 from app.schemas import Base, Client
 
 TEST_SQLALCHEMY_DATABASE_URL: str = "sqlite+aiosqlite:///./test.sqlite"
@@ -59,18 +60,25 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
         yield async_client
 
 
-class Created_Client_Type_(TypedDict):
+class CreatedClientType(TypedDict):
     client_id: str
     api_key: str
+    email: str
+    password: str
+    password_hash: str
 
 
 @pytest_asyncio.fixture(scope="function")
-async def created_client(session: AsyncSession) -> Created_Client_Type_:
+async def created_client(
+    session: AsyncSession,
+) -> AsyncGenerator[CreatedClientType, None]:
     """
     Fixture to create a client and a plaintext API key in the database.
     Returns a dictionary with client details and the key.
     """
-    # 1. Define the plaintext API key and client data
+    password = "ABC"
+    password_hash = create_hash(password)
+
     test_client = Client(
         client_id="test-auth-123",
         full_name="Test User",
@@ -78,11 +86,22 @@ async def created_client(session: AsyncSession) -> Created_Client_Type_:
         date_of_birth=datetime.date(1974, 1, 1),
         gender="Test",
         country="Testland",
-        password_hash="abc",
+        password_hash=password_hash,
     )
 
     session.add(test_client)
     await session.commit()
     await session.refresh(test_client)
 
-    return {"client_id": test_client.client_id, "api_key": test_client.api_key}
+    client_data = CreatedClientType(
+        client_id=test_client.client_id,
+        api_key=test_client.api_key,
+        email=test_client.email,
+        password=password,
+        password_hash=test_client.password_hash,
+    )
+
+    yield client_data
+
+    await session.delete(test_client)
+    await session.commit()
