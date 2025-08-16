@@ -1,15 +1,27 @@
-FROM python:3.10
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM python:3-slim
 
-WORKDIR /code
+EXPOSE 6060
 
-COPY ./requirements.txt /code/requirements.txt
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
 
-COPY ./assets /code/assets
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-COPY ./app /code/app
+# Install pip requirements
+WORKDIR /app
+COPY pyproject.toml .
+RUN python -m pip install .[test]
 
-EXPOSE 80
+COPY . .
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Creates a non-root user with an explicit UID and adds permission to access the /app folder
+# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
+
+# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+CMD ["gunicorn", "--bind", "0.0.0.0:6060", "-k", "uvicorn.workers.UvicornWorker",  "--chdir", "app", "main:app"]

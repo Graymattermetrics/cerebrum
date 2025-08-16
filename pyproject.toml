@@ -1,0 +1,44 @@
+[project]
+name = "graymattermetrics-client-server"
+version = "0.0.1"
+
+description = "A HTTP server managing clients"
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [ { name = "CaedenPH" } ]
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "aiosqlite",
+  "fastapi[all]",
+  "gunicorn",
+  "pydantic",
+  "sqlalchemy>=2.0.3",
+  "uvicorn[standard]",
+]
+optional-dependencies.dev = [
+  "black==22.6",
+  "typing-extensions>=4.3,<5",
+]
+optional-dependencies.test = [
+  "aiosqlite",
+  "anyio>=3",
+  "httpx>=0.24",
+  "pytest>=7",
+  "pytest-asyncio>=0.21",
+  "sqlalchemy[asyncio]",
+]
+
+[tool.black]
+line-length = 110
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+combine_star = true
+line_length = 110
