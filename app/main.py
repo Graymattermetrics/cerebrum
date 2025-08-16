@@ -4,19 +4,25 @@ Implements middleware on the app.
 """
 
 from contextlib import asynccontextmanager
-import hashlib
 import secrets
 import uuid
 
 import fastapi
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import create_db_and_tables, get_db
-from app.models import Client_Create_Model_, LoginBody_Model_, LoginResponse_Model_
-from app.schemas import Client
+from app.models import (
+    Client_Create_Model_,
+    LoginBody_Model_,
+    LoginResponse_Model_,
+    CogspeedTestResult_Model_,
+)
+from app.schemas import Client, CogspeedTestResult, CogspeedTestRound
+from app.security import get_client_id_from_api_key
+from app.utils import create_hash
 
 
 @asynccontextmanager
@@ -41,10 +47,6 @@ async def get_root():
     return "Hello"
 
 
-def create_hash(x: str) -> str:
-    return hashlib.sha256(x.encode()).hexdigest()
-
-
 @app.post("/clients/login")
 async def login(
     body: LoginBody_Model_, db: AsyncSession = Depends(get_db)
@@ -63,14 +65,10 @@ async def login(
             success=False, error="Client does not exist", client=None
         )
 
-    return LoginResponse_Model_(
-        success=True,
-        client=client,  # type: ignore
-        error=None,
-    )
+    return LoginResponse_Model_(success=True, client=client, error=None)  # type: ignore
 
 
-@app.post("/clients/signup", status_code=201)
+@app.post("/clients/signup", status_code=status.HTTP_201_CREATED)
 async def client_signup(
     client: Client_Create_Model_, db: AsyncSession = Depends(get_db)
 ) -> LoginResponse_Model_:
@@ -79,10 +77,7 @@ async def client_signup(
     existing_client = result.scalar_one_or_none()
 
     if existing_client:
-        raise HTTPException(
-            status_code=409,
-            detail="Email already registered",
-        )
+        raise HTTPException(status_code=409, detail="Email already registered")
 
     password_hash = create_hash(client.password)
     client_id = secrets.token_urlsafe(64)[:10]
@@ -99,8 +94,30 @@ async def client_signup(
     await db.commit()
     await db.refresh(db_client)
 
-    return LoginResponse_Model_(
-        success=True,
-        error=None,
-        client=db_client,  # type: ignore
+    return LoginResponse_Model_(success=True, error=None, client=db_client)  # type: ignore
+
+
+@app.post("/clients/cogspeed/tests", status_code=status.HTTP_201_CREATED)
+async def post_cogspeed_test(
+    test: CogspeedTestResult_Model_,
+    db: AsyncSession = Depends(get_db),
+    client_id: str = Depends(get_client_id_from_api_key),
+) -> int:
+    if client_id != test.client_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"The client ID in the header ('{client_id}') does not match the client ID in the body ('{test.client_id}').",
+        )
+
+    metadata = {"client_id": test.client_id, "test_id": test.id}
+    rounds = [metadata | r.model_dump() for r in test.rounds]
+
+    db_cogspeed_test_result = CogspeedTestResult(
+        rounds=[CogspeedTestRound(**r) for r in rounds],
+        **test.model_dump(exclude={"rounds"}),
     )
+    db.add(db_cogspeed_test_result)
+    await db.commit()
+    await db.refresh(db_cogspeed_test_result)
+
+    return status.HTTP_201_CREATED

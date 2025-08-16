@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.main import create_hash
 from app.schemas import Client
 
-# Mark all tests in this file as asyncio
 pytestmark = pytest.mark.asyncio
 
 
