@@ -12,7 +12,7 @@ from app.database import get_db
 from app.main import app
 from app.schemas import Base, Client
 
-TEST_SQLALCHEMY_DATABASE_URL: str = "sqlite+aiosqlite:///./test.sql"
+TEST_SQLALCHEMY_DATABASE_URL: str = "sqlite+aiosqlite:///./test.sqlite"
 
 engine = create_async_engine(TEST_SQLALCHEMY_DATABASE_URL)
 

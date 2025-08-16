@@ -1,5 +1,5 @@
 __pycache__
 .env
-*.sql
+*.sqlite
 
 node_modules/
