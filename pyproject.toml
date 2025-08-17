@@ -34,6 +34,11 @@ optional-dependencies.test = [
   "sqlalchemy[asyncio]",
 ]
 
+[tool.pytest.ini_options]
+pythonpath = [
+    ".", "app",
+]
+
 [tool.black]
 line-length = 110
 
