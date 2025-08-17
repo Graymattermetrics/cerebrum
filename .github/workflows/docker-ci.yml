@@ -33,7 +33,7 @@ jobs:
 
       - name: Run tests inside the container
         run: |
-          docker compose exec web python -m pytest
+          docker compose exec web pytest
 
       - name: View logs on failure
         if: failure()
