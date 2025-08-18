@@ -1,6 +1,6 @@
 services:
   api:
-    image:  graymattermetrics/cerebrum
+    image: graymattermetrics/cerebrum
     build:
       context: .
       dockerfile: ./Dockerfile
