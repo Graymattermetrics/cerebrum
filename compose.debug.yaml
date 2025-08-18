@@ -1,5 +1,5 @@
 services:
-  graymattermetricsclientserver:
+  api:
     image: client-server
     build:
       context: .

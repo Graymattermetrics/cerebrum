@@ -1,5 +1,5 @@
 services:
-  web:
+  api:
     image: client-server
     build:
       context: .
