@@ -97,8 +97,8 @@ class CogspeedTestResultModel(BaseModel):
     block_count: int = Field(alias="blockCount")
     lowest_block_time: float = Field(alias="lowestBlockTime")
     highest_block_time: float = Field(alias="highestBlockTime")
-    block_range: int = Field(alias="blockRange")
-    final_block_diff: int = Field(alias="finalBlockDiff")
+    block_range: float = Field(alias="blockRange")
+    final_block_diff: float = Field(alias="finalBlockDiff")
     total_machine_paced_answers: int = Field(alias="totalMachinePacedAnswers")
     total_machine_paced_correct_answers: int = Field(
         alias="totalMachinePacedCorrectAnswers"
