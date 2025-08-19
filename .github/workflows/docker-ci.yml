@@ -22,18 +22,18 @@ jobs:
         run: |
           echo "Waiting for container to be healthy..."
           for i in {1..30}; do
-            if docker compose exec web python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"; then
+            if docker compose exec api python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"; then
               echo "Container is healthy!"
               break
             fi
             sleep 1
           done
           # Check one last time and fail if not ready
-          docker compose exec web python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"
+          docker compose exec api python -c "import socket; s = socket.socket(); s.connect(('localhost', 6060))"
 
       - name: Run tests inside the container
         run: |
-          docker compose exec web pytest
+          docker compose exec api pytest
 
       - name: View logs on failure
         if: failure()

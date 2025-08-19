@@ -1,6 +1,6 @@
 services:
-  graymattermetricsclientserver:
-    image: client-server
+  api:
+    image: graymattermetrics/cerebrum:debug
     build:
       context: .
       dockerfile: ./Dockerfile
