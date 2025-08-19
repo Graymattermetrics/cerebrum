@@ -27,7 +27,7 @@ The recommended way to run the application for local development is using Docker
     An environment file is required to store sensitive information like database credentials. An example file is provided.
 
     ```bash
-    cp .env.example .env
+    cp .env.sample .env
     ```
     You can review and modify the variables in the `.env` file if needed, but the default values are configured to work with the provided Docker Compose setup.
 
