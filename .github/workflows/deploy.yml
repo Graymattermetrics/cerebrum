@@ -1,0 +1,21 @@
+# SSH's into VPS and deploys the docker container
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to VPS and deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /Graymattermetrics/cerebrum
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
