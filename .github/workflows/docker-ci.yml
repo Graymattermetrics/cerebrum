@@ -15,6 +15,10 @@ jobs:
       - name: Build the Docker image
         run: docker compose build
 
+      - name: Set environment variables
+        run: |
+          cp sample.env .env
+
       - name: Start the container
         run: docker compose up -d
 
