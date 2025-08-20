@@ -35,6 +35,9 @@ optional-dependencies.test = [
   "sqlalchemy[asyncio]",
 ]
 
+[tool.setuptools]
+packages = [ "app" ]
+
 [tool.black]
 line-length = 110
 
