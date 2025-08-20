@@ -114,7 +114,7 @@ def generate_cogspeed_test_results_chart(
         "fatigue_level",
     ), "Preventing SQL injection"
     cogspeed_results = connection.execute(
-        "SELECT date, {key} FROM cogspeed_test_results WHERE client_id = ?",
+        f"SELECT date, {key} FROM cogspeed_test_results WHERE client_id = ?",
         (client_id,),
     ).fetchall()
 
