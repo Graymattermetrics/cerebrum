@@ -60,17 +60,22 @@ class LoginResponseModel(BaseModel):
 class CogspeedTestRoundModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    num: int = Field(alias="Num")
-    type: str = Field(alias="Type")
-    duration: float = Field(alias="Duration")
-    response: float = Field(alias="Response")
-    status: str = Field(alias="Status")
-    ratio: float = Field(alias="Ratio")
-    rm: float = Field(alias="Rm")
-    query: str = Field(alias="Query")
-    location: str = Field(alias="Location")
-    clicked: bool = Field(alias="Clicked")
-    previous: str = Field(alias="Previous")
+    status: str = Field(alias="status")
+    round_type_normalized: str = Field(alias="roundTypeNormalized")
+    answer_location: int = Field(alias="answerLocation")
+    location_clicked: int | None = Field(alias="locationClicked")
+    query_number: str = Field(alias="queryNumber")
+    duration: float = Field(alias="duration")
+    correct_rolling_mean_ratio: str | float = Field(alias="correctRollingMeanRatio")
+    round_number: int = Field(alias="roundNumber")
+    round_type: int = Field(alias="roundType")
+    time_taken: float = Field(alias="timeTaken")
+    is_correct_or_incorrect_from_previous: str | None = Field(
+        alias="isCorrectOrIncorrectFromPrevious"
+    )
+    ratio: float = Field(alias="ratio")
+    id: str = Field(alias="_id")
+    time_epoch: float = Field(alias="_time_epoch")
 
 
 class CogspeedTestResultModel(BaseModel):

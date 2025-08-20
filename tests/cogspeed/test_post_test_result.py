@@ -27,6 +27,7 @@ async def test_post_cogspeed_test_result(
     response = await client.post(
         "clients/cogspeed/tests", json=payload, headers=headers
     )
+    print(response.json())
     assert response.status_code == 201
 
     query = select(CogspeedTestResult).where(CogspeedTestResult.id == payload["id"])
@@ -51,30 +52,36 @@ async def test_post_cogspeed_test_result(
 ## Test data
 example_test_rounds: list[Any] = [  # Don't add all 26 here for readability
     {
-        "Num": 1,
-        "Type": "user_paced",
-        "Duration": 2826.0,
-        "Response": -1.0,
-        "Status": "no_response",
-        "Ratio": -1.0,
-        "Rm": 1.0,
-        "Query": "left",
-        "Location": "left",
-        "Clicked": False,
-        "Previous": "right",
+        "status": "correct",
+        "roundTypeNormalized": "training",
+        "answerLocation": 4,
+        "locationClicked": 4,
+        "queryNumber": "7num",
+        "duration": -1,
+        "correctRollingMeanRatio": "n/a",
+        "roundNumber": 1,
+        "roundType": 0,
+        "timeTaken": 1222.2000000476837,
+        "isCorrectOrIncorrectFromPrevious": None,
+        "ratio": 0,
+        "_id": "bb8685a0-d571-42a6-93f0-0a9ecc417984",
+        "_time_epoch": 8180.100000143051,
     },
     {
-        "Num": 2,
-        "Type": "user_paced",
-        "Duration": 1582.0,
-        "Response": -1.0,
-        "Status": "no_response",
-        "Ratio": -1.0,
-        "Rm": 1.0,
-        "Query": "right",
-        "Location": "right",
-        "Clicked": False,
-        "Previous": "left",
+        "status": "correct",
+        "roundTypeNormalized": "practice",
+        "answerLocation": 6,
+        "locationClicked": 6,
+        "queryNumber": "9dot",
+        "duration": -1,
+        "correctRollingMeanRatio": "n/a",
+        "roundNumber": 2,
+        "roundType": 1,
+        "timeTaken": 1001.5999999046326,
+        "isCorrectOrIncorrectFromPrevious": None,
+        "ratio": 0,
+        "_id": "246826c7-1b43-460d-908f-3ee2765c6dc4",
+        "_time_epoch": 9181.700000047684,
     },
 ]
 example_test_response: dict[str, Any] = {

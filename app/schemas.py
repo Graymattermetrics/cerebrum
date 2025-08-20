@@ -120,7 +120,7 @@ class CogspeedTestRound(Base):
 
     client_id: Mapped[str] = mapped_column(String, primary_key=True)
     test_id: Mapped[str] = mapped_column(String, primary_key=True)
-    num: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
+    round_number: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -131,16 +131,23 @@ class CogspeedTestRound(Base):
 
     test_result: Mapped["CogspeedTestResult"] = relationship(back_populates="rounds")
 
-    type: Mapped[str] = mapped_column(String)
-    duration: Mapped[float] = mapped_column(Float)
-    response: Mapped[float] = mapped_column(Float)
     status: Mapped[str] = mapped_column(String)
+    round_type_normalized: Mapped[str] = mapped_column(String)
+    answer_location: Mapped[int] = mapped_column(Integer)
+    location_clicked: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    query_number: Mapped[str] = mapped_column(String)
+    duration: Mapped[float] = mapped_column(Float)
+    correct_rolling_mean_ratio: Mapped[str | float] = mapped_column(
+        String
+    )  # store as string to handle "n/a"
+    round_type: Mapped[int] = mapped_column(Integer)
+    time_taken: Mapped[float] = mapped_column(Float)
+    is_correct_or_incorrect_from_previous: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
     ratio: Mapped[float] = mapped_column(Float)
-    rm: Mapped[float] = mapped_column(Float)
-    query: Mapped[str] = mapped_column(String)
-    location: Mapped[str] = mapped_column(String)
-    clicked: Mapped[bool] = mapped_column(Boolean)
-    previous: Mapped[str] = mapped_column(String)
+    id: Mapped[str] = mapped_column(String, unique=True)
+    time_epoch: Mapped[float] = mapped_column(Float)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
