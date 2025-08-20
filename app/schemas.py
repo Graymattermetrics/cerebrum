@@ -120,7 +120,7 @@ class CogspeedTestRound(Base):
 
     client_id: Mapped[str] = mapped_column(String, primary_key=True)
     test_id: Mapped[str] = mapped_column(String, primary_key=True)
-    round_number: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
+    round_number: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
