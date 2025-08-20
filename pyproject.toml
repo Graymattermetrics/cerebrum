@@ -18,6 +18,7 @@ dependencies = [
   "fastapi[all]",
   "gunicorn",
   "pydantic",
+  "scipy",
   "sqlalchemy>=2.0.3",
   "streamlit",
   "streamlit-option-menu",
