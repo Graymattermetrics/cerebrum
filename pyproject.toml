@@ -19,6 +19,7 @@ dependencies = [
   "gunicorn",
   "pydantic",
   "sqlalchemy>=2.0.3",
+  "streamlit",
   "uvicorn[standard]",
 ]
 optional-dependencies.dev = [

@@ -18,6 +18,19 @@ services:
     depends_on:
       - init-db
 
+  visulalisation:
+    image: graymattermetrics/visualisation
+    build:
+      dockerfile: ./visualisation/Dockerfile
+    ports:
+      - 7070:7070
+    volumes:
+      - ./data:/data
+    depends_on:
+      - init-db
+    env_file:
+      - .env
+
   sqlite-web:
     image: coleifer/sqlite-web
     platform: linux/amd64
