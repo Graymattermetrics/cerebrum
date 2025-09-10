@@ -2,11 +2,12 @@
 
 import os
 from typing import Literal
-import streamlit as st
-import pandas as pd
-from streamlit_option_menu import option_menu
 
-from utils import create_hash, format_string
+import altair as alt
+import pandas as pd
+import streamlit as st
+from streamlit_option_menu import option_menu
+from utils import create_hash, format_string, mean_ci
 
 
 def open_db():
@@ -132,6 +133,102 @@ def generate_cogspeed_test_results_chart(
     tab2.dataframe(cogspeed_df)
 
 
+def generate_time_of_day_chart(client_id: str) -> None:
+    """Plots 2 datasets on the same graph, results (blocking round duration)
+    in the morning and results in the evening.
+    """
+    morning_results = connection.execute(
+        "SELECT date, blocking_round_duration FROM cogspeed_test_results WHERE "
+        "strftime('%H', date) BETWEEN '06' AND '11' AND client_id=?",
+        (client_id,),
+    ).fetchall()
+    evening_results = connection.execute(
+        "SELECT date, blocking_round_duration FROM cogspeed_test_results WHERE "
+        "strftime('%H', date) BETWEEN '17' AND '22' AND client_id=?",
+        (client_id,),
+    ).fetchall()
+
+    if not morning_results or not evening_results:
+        st.warning("No Cogspeed test results found for the specified time periods.")
+        st.stop()
+
+    morning_df = pd.DataFrame(morning_results, columns=["Test Date", "Morning BRD"])
+    evening_df = pd.DataFrame(evening_results, columns=["Test Date", "Evening BRD"])
+
+    morning_df["Morning BRD"] = morning_df["Morning BRD"].round(3)
+    evening_df["Evening BRD"] = evening_df["Evening BRD"].round(3)
+
+    morning_df["Test Date"] = pd.to_datetime(morning_df["Test Date"])
+    evening_df["Test Date"] = pd.to_datetime(evening_df["Test Date"])
+
+    combined_df = pd.merge(morning_df, evening_df, on="Test Date", how="outer")
+
+    chart = (
+        alt.Chart(combined_df.melt("Test Date", var_name="Period", value_name="BRD"))
+        .mark_line(point=True)
+        .encode(
+            x="Test Date:T",
+            y="BRD:Q",
+            color="Period:N",
+            tooltip=[
+                alt.Tooltip("Test Date:T", title="Timestamp", format="%Y-%m-%d %H:%M"),
+                "Period:N",
+                alt.Tooltip("BRD:Q", title="Blocking Round Duration (s)"),
+            ],
+        )
+    )
+
+    tab1, tab2, tab3 = st.tabs(["Trends", "Means", "Dataframe"])
+    with tab1:
+        st.altair_chart(chart, use_container_width=True)
+    with tab2:
+        morning_mean, morning_ci = mean_ci(morning_df["Morning BRD"])
+        evening_mean, evening_ci = mean_ci(evening_df["Evening BRD"])
+
+        st.write(
+            f"**Morning Mean Blocking Round Duration:** {morning_mean} milliseconds"
+        )
+        st.write(
+            f"**Evening Mean Blocking Round Duration:** {evening_mean} milliseconds"
+        )
+        st.write(f"**Morning Confidence Interval:** ±{morning_ci:.2f} milliseconds")
+        st.write(f"**Evening Confidence Interval:** ±{evening_ci:.2f} milliseconds")
+
+        ci_df = pd.DataFrame(
+            {
+                "Period": ["Morning", "Evening"],
+                "Mean BRD": [morning_mean, evening_mean],
+                "CI": [morning_ci, evening_ci],
+            }
+        )
+        ci_df["Lower"] = ci_df["Mean BRD"] - ci_df["CI"]
+        ci_df["Upper"] = ci_df["Mean BRD"] + ci_df["CI"]
+
+        bars = (
+            alt.Chart(ci_df)
+            .mark_bar()
+            .encode(
+                x=alt.X("Period:N", axis=alt.Axis(title="Period")),
+                y=alt.Y(
+                    "Mean BRD:Q",
+                    axis=alt.Axis(title="Mean Blocking Round Duration (s)"),
+                ),
+                tooltip=["Period", "Mean BRD", "CI"],
+            )
+        )
+
+        error_bars = (
+            alt.Chart(ci_df)
+            .mark_errorbar(color="red", thickness=2)
+            .encode(x="Period:N", y="Lower:Q", y2="Upper:Q")
+        )
+
+        chart = bars + error_bars
+        st.altair_chart(chart, use_container_width=False)
+    with tab3:
+        st.dataframe(combined_df)
+
+
 connection = open_db()
 
 with st.sidebar:
@@ -166,6 +263,10 @@ if selected == "Home":
         generate_cogspeed_test_results_chart(client_id, key="number_of_rounds")
     with c4:
         generate_cogspeed_test_results_chart(client_id, key="fatigue_level")
+
+    # Create graph for time of day
+    generate_time_of_day_chart(client_id)
+
 
 if selected == "Admin":
     authenticate_admin()

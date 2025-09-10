@@ -9,4 +9,4 @@ RUN pip install .[test]
 
 COPY visualisation/src .
 
-CMD ["streamlit", "run", "main.py", "--server.port", "7070"]
+CMD ["streamlit", "run", "main.py", "--server.port", "7070", "--server.address", "0.0.0.0"]
